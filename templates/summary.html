@@ -7,7 +7,7 @@
 </head>
 <body class="bg-gray-100 p-6">
   <div class="max-w-xl mx-auto bg-white p-6 rounded shadow">
-    <h2 class="text-2xl font-bold mb-4">Summary</h2>
+    <h2 class="text-2xl font-bold mb-4 flex items-center"><span class="mr-2">📊</span>Summary</h2>
     <p class="mb-2">Total spent <strong>today</strong>: Rp{{ "%.0f"|format(today_total) }}</p>
     <p class="mb-4">Total spent <strong>this month</strong>: Rp{{ "%.0f"|format(month_total) }}</p>
     <h3 class="font-semibold mb-2">By Category</h3>
@@ -16,9 +16,10 @@
       <li>{{ cat }}: Rp{{ "%.0f"|format(amt) }}</li>
       {% endfor %}
     </ul>
-    <div class="mt-4 text-sm">
-      <a href="/" class="text-blue-600 hover:underline">Add New</a> |
-      <a href="/list" class="text-blue-600 hover:underline">Transactions</a>
+    <div class="mt-4 text-sm flex gap-2">
+      <a href="/" class="text-blue-600 hover:underline flex items-center"><span class="mr-1">💸</span>Add New</a>
+      <span>|</span>
+      <a href="/list" class="text-blue-600 hover:underline flex items-center"><span class="mr-1">📋</span>Transactions</a>
     </div>
   </div>
 </body>
