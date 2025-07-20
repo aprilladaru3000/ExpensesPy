@@ -1,0 +1,16 @@
+<!doctype html>
+<html>
+<head><title>Summary</title></head>
+<body>
+  <h2>Summary</h2>
+  <p>Today: Rp{{ "%.0f"|format(today_total) }}</p>
+  <p>This Month: Rp{{ "%.0f"|format(month_total) }}</p>
+  <h3>By Category:</h3>
+  <ul>
+    {% for cat, amt in by_cat.items() %}
+      <li>{{ cat }}: Rp{{ "%.0f"|format(amt) }}</li>
+    {% endfor %}
+  </ul>
+  <p><a href="/">Back</a></p>
+</body>
+</html>

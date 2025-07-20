@@ -1,0 +1,13 @@
+<!doctype html>
+<html>
+<head><title>Transactions</title></head>
+<body>
+  <h2>Transaction List</h2>
+  <ul>
+    {% for tx in transactions %}
+      <li>{{ tx.ts[:16] }} - {{ tx.desc }} - Rp{{ "%.0f"|format(tx.amount) }} ({{ tx.category }})</li>
+    {% endfor %}
+  </ul>
+  <p><a href="/">Back</a></p>
+</body>
+</html>
