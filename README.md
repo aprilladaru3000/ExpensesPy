@@ -1,3 +1,3 @@
-# CobaDulu
+# Expenses Python
 
-FirstCode
+Nyatet jajan berapa hari ini
