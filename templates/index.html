@@ -7,16 +7,21 @@
 </head>
 <body class="bg-gray-100 p-6">
   <div class="max-w-xl mx-auto bg-white p-6 rounded shadow">
-    <h2 class="text-2xl font-bold mb-4">Add Expense</h2>
+    <h2 class="text-2xl font-bold mb-4 flex items-center"><span class="mr-2">💸</span>Add Expense</h2>
+    <!-- Feedback message placeholder -->
+    {% if message %}
+      <div class="mb-4 p-2 bg-green-100 text-green-800 rounded">{{ message }}</div>
+    {% endif %}
     <form method="POST" action="/add" class="space-y-4">
-      <input name="desc" placeholder="Description" class="w-full p-2 border rounded" required>
-      <input name="amount" type="number" step="1000" placeholder="Amount" class="w-full p-2 border rounded" required>
-      <input name="category" placeholder="Category" class="w-full p-2 border rounded" value="misc">
-      <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded">Add</button>
+      <input name="desc" placeholder="Description" class="w-full p-2 border rounded focus:ring-2 focus:ring-blue-200" required>
+      <input name="amount" type="number" step ="1000" placeholder="Amount" class="w-full p-2 border rounded focus:ring-2 focus:ring-blue-200" required>
+      <input name="category" placeholder="Category" class="w-full p-2 border rounded focus:ring-2 focus:ring-blue-200" value="misc">
+      <button type="submit" class="bg-blue-600 hover:bg-blue-700 transition text-white px-4 py-2 rounded flex items-center"><span class="mr-2">➕</span>Add</button>
     </form>
-    <div class="mt-4 text-sm">
-      <a href="/list" class="text-blue-600 hover:underline">View Transactions</a> |
-      <a href="/summary" class="text-blue-600 hover:underline">Summary</a>
+    <div class="mt-4 text-sm flex gap-2">
+      <a href="/list" class="text-blue-600 hover:underline flex items-center"><span class="mr-1">📋</span>View Transactions</a>
+      <span>|</span>
+      <a href="/summary" class="text-blue-600 hover:underline flex items-center"><span class="mr-1">📊</span>Summary</a>
     </div>
   </div>
 </body>

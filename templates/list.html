@@ -7,7 +7,11 @@
 </head>
 <body class="bg-gray-100 p-6">
   <div class="max-w-2xl mx-auto bg-white p-6 rounded shadow">
-    <h2 class="text-2xl font-bold mb-4">Transaction List</h2>
+    <h2 class="text-2xl font-bold mb-4 flex items-center"><span class="mr-2">📋</span>Transaction List</h2>
+    <!-- Feedback message placeholder -->
+    {% if message %}
+      <div class="mb-4 p-2 bg-green-100 text-green-800 rounded">{{ message }}</div>
+    {% endif %}
     <table class="w-full table-auto border">
       <thead>
         <tr class="bg-gray-200">
@@ -20,23 +24,25 @@
       </thead>
       <tbody>
         {% for tx in transactions %}
-        <tr class="border-b">
+        <tr class="border-b hover:bg-gray-50">
           <td class="p-2">{{ tx.ts[:16].replace('T', ' ') }}</td>
           <td class="p-2">{{ tx.desc }}</td>
           <td class="p-2">{{ tx.category }}</td>
           <td class="p-2 text-right">Rp{{ "%.0f"|format(tx.amount) }}</td>
-          <td class="p-2">
-            <form method="POST" action="/delete/{{ tx.id }}">
-              <button class="text-red-500 hover:underline" onclick="return confirm('Delete this entry?')">🗑️</button>
+          <td class="p-2 flex gap-2">
+            <a href="/edit/{{ tx.id }}" class="text-yellow-500 hover:underline" title="Edit">✏️</a>
+            <form method="POST" action="/delete/{{ tx.id }}" style="display:inline;">
+              <button class="text-red-500 hover:underline" onclick="return confirm('Delete this entry?')" title="Delete">🗑️</button>
             </form>
           </td>
         </tr>
         {% endfor %}
       </tbody>
     </table>
-    <div class="mt-4 text-sm">
-      <a href="/" class="text-blue-600 hover:underline">Add New</a> |
-      <a href="/summary" class="text-blue-600 hover:underline">Summary</a>
+    <div class="mt-4 text-sm flex gap-2">
+      <a href="/" class="text-blue-600 hover:underline flex items-center"><span class="mr-1">💸</span>Add New</a>
+      <span>|</span>
+      <a href="/summary" class="text-blue-600 hover:underline flex items-center"><span class="mr-1">📊</span>Summary</a>
     </div>
   </div>
 </body>

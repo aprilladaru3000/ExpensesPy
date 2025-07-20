@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect, url_for
+from flask import Flask, render_template, request, redirect, url_for, flash, get_flashed_messages
 import json
 import datetime as dt
 from pathlib import Path
@@ -6,6 +6,7 @@ from collections import defaultdict
 import uuid
 
 app = Flask(__name__)
+app.secret_key = 'your_secret_key_here'  # Needed for flash messages
 DATA_FILE = Path(__file__).with_name("expenses.json")
 
 def load_data():
@@ -18,7 +19,8 @@ def save_data(data):
 
 @app.route('/')
 def index():
-    return render_template('index.html')
+    message = get_flashed_messages()
+    return render_template('index.html', message=message[0] if message else None)
 
 @app.route('/add', methods=['POST'])
 def add():
@@ -43,6 +45,7 @@ def add():
         "ts": dt.datetime.now().isoformat()
     })
     save_data(data)
+    flash('Expense added successfully!')
     return redirect(url_for('list_tx'))
 
 @app.route('/delete/<id>', methods=['POST'])
@@ -50,12 +53,38 @@ def delete(id):
     data = load_data()
     data = [tx for tx in data if tx["id"] != id]
     save_data(data)
+    flash('Expense deleted!')
     return redirect(url_for('list_tx'))
+
+@app.route('/edit/<id>', methods=['GET', 'POST'])
+def edit(id):
+    data = load_data()
+    tx = next((item for item in data if item["id"] == id), None)
+    if not tx:
+        return "Expense not found", 404
+    if request.method == 'POST':
+        desc = request.form.get('desc')
+        amount = request.form.get('amount')
+        category = request.form.get('category', 'misc')
+        if not desc or not amount:
+            return "Missing data", 400
+        try:
+            amount = float(amount)
+        except ValueError:
+            return "Invalid amount", 400
+        tx['desc'] = desc
+        tx['amount'] = amount
+        tx['category'] = category
+        save_data(data)
+        flash('Expense updated!')
+        return redirect(url_for('list_tx'))
+    return render_template('edit.html', tx=tx)
 
 @app.route('/list')
 def list_tx():
     data = sorted(load_data(), key=lambda x: x["ts"], reverse=True)
-    return render_template('list.html', transactions=data)
+    message = get_flashed_messages()
+    return render_template('list.html', transactions=data, message=message[0] if message else None)
 
 @app.route('/summary')
 def summary():
