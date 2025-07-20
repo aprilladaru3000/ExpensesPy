@@ -1,0 +1,14 @@
+[
+  {
+    "desc": "Gojek ride",
+    "amount": 22000.0,
+    "category": "transport",
+    "ts": "2025-07-20T14:06:48.070343"
+  },
+  {
+    "desc": "Kopi susu",
+    "amount": 18000.0,
+    "category": "food",
+    "ts": "2025-07-20T14:07:00.165784"
+  }
+]
