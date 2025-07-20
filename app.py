@@ -3,6 +3,7 @@ import json
 import datetime as dt
 from pathlib import Path
 from collections import defaultdict
+import uuid
 
 app = Flask(__name__)
 DATA_FILE = Path(__file__).with_name("expenses.json")
@@ -21,16 +22,33 @@ def index():
 
 @app.route('/add', methods=['POST'])
 def add():
-    desc = request.form['desc']
-    amount = float(request.form['amount'])
-    category = request.form['category']
+    desc = request.form.get('desc')
+    amount = request.form.get('amount')
+    category = request.form.get('category', 'misc')
+
+    if not desc or not amount:
+        return "Missing data", 400
+
+    try:
+        amount = float(amount)
+    except ValueError:
+        return "Invalid amount", 400
+
     data = load_data()
     data.append({
+        "id": str(uuid.uuid4()),
         "desc": desc,
         "amount": amount,
         "category": category,
         "ts": dt.datetime.now().isoformat()
     })
+    save_data(data)
+    return redirect(url_for('list_tx'))
+
+@app.route('/delete/<id>', methods=['POST'])
+def delete(id):
+    data = load_data()
+    data = [tx for tx in data if tx["id"] != id]
     save_data(data)
     return redirect(url_for('list_tx'))
 

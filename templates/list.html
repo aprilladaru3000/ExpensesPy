@@ -1,13 +1,43 @@
-<!doctype html>
-<html>
-<head><title>Transactions</title></head>
-<body>
-  <h2>Transaction List</h2>
-  <ul>
-    {% for tx in transactions %}
-      <li>{{ tx.ts[:16] }} - {{ tx.desc }} - Rp{{ "%.0f"|format(tx.amount) }} ({{ tx.category }})</li>
-    {% endfor %}
-  </ul>
-  <p><a href="/">Back</a></p>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Transactions</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 p-6">
+  <div class="max-w-2xl mx-auto bg-white p-6 rounded shadow">
+    <h2 class="text-2xl font-bold mb-4">Transaction List</h2>
+    <table class="w-full table-auto border">
+      <thead>
+        <tr class="bg-gray-200">
+          <th class="p-2 text-left">Date</th>
+          <th class="p-2 text-left">Desc</th>
+          <th class="p-2 text-left">Category</th>
+          <th class="p-2 text-right">Amount</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for tx in transactions %}
+        <tr class="border-b">
+          <td class="p-2">{{ tx.ts[:16].replace('T', ' ') }}</td>
+          <td class="p-2">{{ tx.desc }}</td>
+          <td class="p-2">{{ tx.category }}</td>
+          <td class="p-2 text-right">Rp{{ "%.0f"|format(tx.amount) }}</td>
+          <td class="p-2">
+            <form method="POST" action="/delete/{{ tx.id }}">
+              <button class="text-red-500 hover:underline" onclick="return confirm('Delete this entry?')">🗑️</button>
+            </form>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    <div class="mt-4 text-sm">
+      <a href="/" class="text-blue-600 hover:underline">Add New</a> |
+      <a href="/summary" class="text-blue-600 hover:underline">Summary</a>
+    </div>
+  </div>
 </body>
 </html>

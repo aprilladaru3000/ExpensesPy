@@ -1,16 +1,23 @@
-<!doctype html>
-<html>
+<!DOCTYPE html>
+<html lang="en">
 <head>
-  <title>Expense Tracker</title>
+  <meta charset="UTF-8">
+  <title>Add Expense</title>
+  <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body>
-  <h2>Add Expense</h2>
-  <form method="POST" action="/add">
-    <input name="desc" placeholder="Description" required>
-    <input name="amount" type="number" placeholder="Amount" required>
-    <input name="category" placeholder="Category" value="misc">
-    <button type="submit">Add</button>
-  </form>
-  <p><a href="/list">View Transactions</a> | <a href="/summary">Summary</a></p>
+<body class="bg-gray-100 p-6">
+  <div class="max-w-xl mx-auto bg-white p-6 rounded shadow">
+    <h2 class="text-2xl font-bold mb-4">Add Expense</h2>
+    <form method="POST" action="/add" class="space-y-4">
+      <input name="desc" placeholder="Description" class="w-full p-2 border rounded" required>
+      <input name="amount" type="number" step="1000" placeholder="Amount" class="w-full p-2 border rounded" required>
+      <input name="category" placeholder="Category" class="w-full p-2 border rounded" value="misc">
+      <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded">Add</button>
+    </form>
+    <div class="mt-4 text-sm">
+      <a href="/list" class="text-blue-600 hover:underline">View Transactions</a> |
+      <a href="/summary" class="text-blue-600 hover:underline">Summary</a>
+    </div>
+  </div>
 </body>
 </html>
