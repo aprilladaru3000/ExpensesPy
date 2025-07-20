@@ -1,3 +1,3 @@
-# CobaDulu
+# Expenses Python
 
-FirstCode
+Buat mesen Mie Ayam
