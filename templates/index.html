@@ -6,22 +6,24 @@
   <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body class="bg-gray-100 p-6">
-  <div class="max-w-xl mx-auto bg-white p-6 rounded shadow">
-    <h2 class="text-2xl font-bold mb-4 flex items-center"><span class="mr-2">💸</span>Add Expense</h2>
+  <div class="max-w-md md:max-w-xl mx-auto bg-white p-4 md:p-6 rounded shadow">
+    <h2 class="text-2xl md:text-3xl font-bold mb-4 flex items-center"><span class="mr-2">💸</span>Add Expense</h2>
     <!-- Feedback message placeholder -->
     {% if message %}
-      <div class="mb-4 p-2 bg-green-100 text-green-800 rounded">{{ message }}</div>
+      <div class="mb-4 p-2 bg-green-100 text-green-800 rounded text-sm md:text-base">{{ message }}</div>
     {% endif %}
-    <form method="POST" action="/add" class="space-y-4">
-      <input name="desc" placeholder="Description" class="w-full p-2 border rounded focus:ring-2 focus:ring-blue-200" required>
-      <input name="amount" type="number" step ="1000" placeholder="Amount" class="w-full p-2 border rounded focus:ring-2 focus:ring-blue-200" required>
-      <input name="category" placeholder="Category" class="w-full p-2 border rounded focus:ring-2 focus:ring-blue-200" value="misc">
-      <button type="submit" class="bg-blue-600 hover:bg-blue-700 transition text-white px-4 py-2 rounded flex items-center"><span class="mr-2">➕</span>Add</button>
+    <form method="POST" action="/add" class="space-y-3 md:space-y-4">
+      <input name="desc" placeholder="Description" class="w-full p-2 border rounded focus:ring-2 focus:ring-blue-200 text-sm md:text-base" required>
+      <input name="amount" type="number" step ="1000" placeholder="Amount" class="w-full p-2 border rounded focus:ring-2 focus:ring-blue-200 text-sm md:text-base" required>
+      <input name="category" placeholder="Category" class="w-full p-2 border rounded focus:ring-2 focus:ring-blue-200 text-sm md:text-base" value="misc">
+      <button type="submit" class="bg-blue-600 hover:bg-blue-700 transition text-white px-4 py-2 rounded flex items-center text-sm md:text-base"><span class="mr-2">➕</span>Add</button>
     </form>
-    <div class="mt-4 text-sm flex gap-2">
+    <div class="mt-4 text-sm md:text-base flex flex-col md:flex-row gap-2 md:gap-4 items-start md:items-center">
       <a href="/list" class="text-blue-600 hover:underline flex items-center"><span class="mr-1">📋</span>View Transactions</a>
-      <span>|</span>
+      <span class="hidden md:inline">|</span>
       <a href="/summary" class="text-blue-600 hover:underline flex items-center"><span class="mr-1">📊</span>Summary</a>
+      <span class="hidden md:inline">|</span>
+      <a href="/charts" class="text-blue-600 hover:underline flex items-center"><span class="mr-1">📈</span>Charts</a>
     </div>
   </div>
 </body>
