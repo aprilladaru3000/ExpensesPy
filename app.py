@@ -104,5 +104,39 @@ def summary():
                            month_total=month_total,
                            by_cat=by_cat)
 
+@app.route('/charts')
+def charts():
+    data = load_data()
+    now = dt.datetime.now()
+    # Prepare last 7 days labels and totals
+    last7 = [(now.date() - dt.timedelta(days=i)) for i in range(6, -1, -1)]
+    last7_labels = [d.strftime('%a %d') for d in last7]
+    last7_totals = []
+    for d in last7:
+        total = sum(tx['amount'] for tx in data if dt.datetime.fromisoformat(tx['ts']).date() == d)
+        last7_totals.append(total)
+    # Prepare current month daily totals
+    month_days = [now.replace(day=1).date() + dt.timedelta(days=i) for i in range(now.day)]
+    month_labels = [d.strftime('%d %b') for d in month_days]
+    month_totals = []
+    for d in month_days:
+        total = sum(tx['amount'] for tx in data if dt.datetime.fromisoformat(tx['ts']).date() == d)
+        month_totals.append(total)
+    # Prepare category totals for current month
+    by_cat = defaultdict(float)
+    for tx in data:
+        tx_date = dt.datetime.fromisoformat(tx['ts'])
+        if tx_date.strftime('%Y-%m') == now.strftime('%Y-%m'):
+            by_cat[tx['category']] += tx['amount']
+    cat_labels = list(by_cat.keys())
+    cat_totals = list(by_cat.values())
+    return render_template('charts.html',
+        last7_labels=last7_labels,
+        last7_totals=last7_totals,
+        month_labels=month_labels,
+        month_totals=month_totals,
+        cat_labels=cat_labels,
+        cat_totals=cat_totals)
+
 if __name__ == '__main__':
     app.run(debug=True)
