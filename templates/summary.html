@@ -6,20 +6,22 @@
   <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body class="bg-gray-100 p-6">
-  <div class="max-w-xl mx-auto bg-white p-6 rounded shadow">
-    <h2 class="text-2xl font-bold mb-4 flex items-center"><span class="mr-2">📊</span>Summary</h2>
-    <p class="mb-2">Total spent <strong>today</strong>: Rp{{ "%.0f"|format(today_total) }}</p>
-    <p class="mb-4">Total spent <strong>this month</strong>: Rp{{ "%.0f"|format(month_total) }}</p>
-    <h3 class="font-semibold mb-2">By Category</h3>
-    <ul class="list-disc pl-5">
+  <div class="max-w-md md:max-w-xl mx-auto bg-white p-4 md:p-6 rounded shadow">
+    <h2 class="text-2xl md:text-3xl font-bold mb-4 flex items-center"><span class="mr-2">📊</span>Summary</h2>
+    <p class="mb-2 text-sm md:text-base">Total spent <strong>today</strong>: Rp{{ "%.0f"|format(today_total) }}</p>
+    <p class="mb-4 text-sm md:text-base">Total spent <strong>this month</strong>: Rp{{ "%.0f"|format(month_total) }}</p>
+    <h3 class="font-semibold mb-2 text-base md:text-lg">By Category</h3>
+    <ul class="list-disc pl-5 text-sm md:text-base">
       {% for cat, amt in by_cat.items() %}
       <li>{{ cat }}: Rp{{ "%.0f"|format(amt) }}</li>
       {% endfor %}
     </ul>
-    <div class="mt-4 text-sm flex gap-2">
+    <div class="mt-4 text-sm md:text-base flex flex-col md:flex-row gap-2 md:gap-4 items-start md:items-center">
       <a href="/" class="text-blue-600 hover:underline flex items-center"><span class="mr-1">💸</span>Add New</a>
-      <span>|</span>
+      <span class="hidden md:inline">|</span>
       <a href="/list" class="text-blue-600 hover:underline flex items-center"><span class="mr-1">📋</span>Transactions</a>
+      <span class="hidden md:inline">|</span>
+      <a href="/charts" class="text-blue-600 hover:underline flex items-center"><span class="mr-1">📈</span>Charts</a>
     </div>
   </div>
 </body>
