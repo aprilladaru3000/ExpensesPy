@@ -8,10 +8,14 @@
 <body class="bg-gray-100 p-6">
   <div class="max-w-full md:max-w-2xl mx-auto bg-white p-4 md:p-6 rounded shadow">
     <h2 class="text-2xl md:text-3xl font-bold mb-4 flex items-center"><span class="mr-2">📋</span>Transaction List</h2>
-    <!-- Feedback message placeholder -->
-    {% if message %}
-      <div class="mb-4 p-2 bg-green-100 text-green-800 rounded text-sm md:text-base">{{ message }}</div>
-    {% endif %}
+    <div class="flex flex-col md:flex-row md:justify-between md:items-center mb-4 gap-2">
+      <div class="flex gap-2">
+        <a href="/export" class="bg-green-600 hover:bg-green-700 text-white px-3 py-2 rounded text-sm md:text-base flex items-center" title="Export CSV">⬇️ Export CSV</a>
+      </div>
+      {% if message %}
+        <div class="p-2 bg-green-100 text-green-800 rounded text-sm md:text-base">{{ message }}</div>
+      {% endif %}
+    </div>
     <div class="overflow-x-auto">
       <table class="w-full table-auto border text-sm md:text-base">
         <thead>
@@ -32,9 +36,7 @@
             <td class="p-2 text-right">Rp{{ "%.0f"|format(tx.amount) }}</td>
             <td class="p-2 flex gap-2">
               <a href="/edit/{{ tx.id }}" class="text-yellow-500 hover:underline" title="Edit">✏️</a>
-              <form method="POST" action="/delete/{{ tx.id }}" style="display:inline;">
-                <button class="text-red-500 hover:underline" onclick="return confirm('Delete this entry?')" title="Delete">🗑️</button>
-              </form>
+              <button type="button" class="text-red-500 hover:underline delete-btn" data-id="{{ tx.id }}" title="Delete">🗑️</button>
             </td>
           </tr>
           {% endfor %}
@@ -48,6 +50,34 @@
       <span class="hidden md:inline">|</span>
       <a href="/charts" class="text-blue-600 hover:underline flex items-center"><span class="mr-1">📈</span>Charts</a>
     </div>
+    <!-- Modal for delete confirmation -->
+    <div id="deleteModal" class="fixed inset-0 bg-black bg-opacity-30 flex items-center justify-center z-50 hidden">
+      <div class="bg-white rounded shadow p-6 max-w-sm w-full">
+        <h3 class="text-lg font-bold mb-2">Confirm Deletion</h3>
+        <p class="mb-4">Are you sure you want to delete this expense?</p>
+        <form id="deleteForm" method="POST">
+          <div class="flex gap-2 justify-end">
+            <button type="button" id="cancelDelete" class="px-4 py-2 rounded bg-gray-300 text-gray-800">Cancel</button>
+            <button type="submit" class="px-4 py-2 rounded bg-red-600 text-white">Delete</button>
+          </div>
+        </form>
+      </div>
+    </div>
+    <script>
+      // Modal confirmation for delete
+      document.querySelectorAll('.delete-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+          const id = this.getAttribute('data-id');
+          const modal = document.getElementById('deleteModal');
+          const form = document.getElementById('deleteForm');
+          form.action = `/delete/${id}`;
+          modal.classList.remove('hidden');
+        });
+      });
+      document.getElementById('cancelDelete').onclick = function() {
+        document.getElementById('deleteModal').classList.add('hidden');
+      };
+    </script>
   </div>
 </body>
 </html>

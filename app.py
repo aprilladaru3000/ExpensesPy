@@ -1,9 +1,10 @@
-from flask import Flask, render_template, request, redirect, url_for, flash, get_flashed_messages
+from flask import Flask, render_template, request, redirect, url_for, flash, get_flashed_messages, Response
 import json
 import datetime as dt
 from pathlib import Path
 from collections import defaultdict
 import uuid
+import csv
 
 app = Flask(__name__)
 app.secret_key = 'your_secret_key_here'  # Needed for flash messages
@@ -137,6 +138,22 @@ def charts():
         month_totals=month_totals,
         cat_labels=cat_labels,
         cat_totals=cat_totals)
+
+@app.route('/export')
+def export():
+    data = load_data()
+    if not data:
+        flash('No data to export!')
+        return redirect(url_for('list_tx'))
+    def generate():
+        fieldnames = ['id', 'desc', 'amount', 'category', 'ts']
+        writer = csv.DictWriter(Response(), fieldnames=fieldnames)
+        yield ','.join(fieldnames) + '\n'
+        for row in data:
+            yield ','.join(str(row.get(f, '')) for f in fieldnames) + '\n'
+    return Response(generate(), mimetype='text/csv', headers={
+        'Content-Disposition': 'attachment; filename=expenses.csv'
+    })
 
 if __name__ == '__main__':
     app.run(debug=True)
