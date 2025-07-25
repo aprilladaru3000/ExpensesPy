@@ -10,6 +10,14 @@
     <h2 class="text-2xl md:text-3xl font-bold mb-4 flex items-center text-gray-900 dark:text-gray-100"><span class="mr-2">📊</span>Summary</h2>
     <p class="mb-2 text-sm md:text-base text-gray-900 dark:text-gray-100">Total spent <strong>today</strong>: Rp{{ "%.0f"|format(today_total) }}</p>
     <p class="mb-4 text-sm md:text-base text-gray-900 dark:text-gray-100">Total spent <strong>this month</strong>: Rp{{ "%.0f"|format(month_total) }}</p>
+    <div class="mb-4 text-xs md:text-sm">
+      Budget: <span class="font-bold">Rp{{ "%.0f"|format(budget) }}</span>
+      <a href="/set_budget" class="ml-2 text-blue-600 dark:text-blue-400 underline">Set Budget</a>
+    </div>
+    <div class="w-full bg-gray-200 dark:bg-gray-700 rounded h-3 mb-2">
+      <div class="h-3 rounded {{ 'bg-red-500' if budget_progress > 100 else 'bg-green-500' }}" style="width: {{ budget_progress if budget_progress < 100 else 100 }}%"></div>
+    </div>
+    <div class="text-xs mb-2 {{ 'text-red-500' if budget_progress > 100 else 'text-green-700 dark:text-green-300' }}">{{ 'Over budget!' if budget_progress > 100 else '%.0f%% of budget used' % budget_progress }}</div>
     <h3 class="font-semibold mb-2 text-base md:text-lg text-gray-900 dark:text-gray-100">By Category</h3>
     <ul class="list-disc pl-5 text-sm md:text-base text-gray-900 dark:text-gray-100">
       {% for cat, amt in by_cat.items() %}

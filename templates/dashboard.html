@@ -17,6 +17,14 @@
       <div class="flex-1 bg-green-100 dark:bg-green-900 rounded p-4 text-center">
         <div class="text-lg md:text-xl font-bold text-green-800 dark:text-green-200">Rp{{ "%.0f"|format(month_total) }}</div>
         <div class="text-xs md:text-sm text-green-700 dark:text-green-300">Spent This Month</div>
+        <div class="mt-2 text-xs md:text-sm">
+          Budget: <span class="font-bold">Rp{{ "%.0f"|format(budget) }}</span>
+          <a href="/set_budget" class="ml-2 text-blue-600 dark:text-blue-400 underline">Set Budget</a>
+        </div>
+        <div class="w-full bg-gray-200 dark:bg-gray-700 rounded h-3 mt-2">
+          <div class="h-3 rounded {{ 'bg-red-500' if budget_progress > 100 else 'bg-green-500' }}" style="width: {{ budget_progress if budget_progress < 100 else 100 }}%"></div>
+        </div>
+        <div class="text-xs mt-1 {{ 'text-red-500' if budget_progress > 100 else 'text-green-700 dark:text-green-300' }}">{{ 'Over budget!' if budget_progress > 100 else '%.0f%% of budget used' % budget_progress }}</div>
       </div>
       <div class="flex-1 bg-yellow-100 dark:bg-yellow-900 rounded p-4 text-center">
         <div class="text-lg md:text-xl font-bold text-yellow-800 dark:text-yellow-200">{{ num_tx }}</div>
