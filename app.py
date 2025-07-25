@@ -9,6 +9,7 @@ import csv
 app = Flask(__name__)
 app.secret_key = 'your_secret_key_here'  # Needed for flash messages
 DATA_FILE = Path(__file__).with_name("expenses.json")
+BUDGET_FILE = Path(__file__).with_name("budget.json")
 
 def load_data():
     if DATA_FILE.exists():
@@ -17,6 +18,27 @@ def load_data():
 
 def save_data(data):
     DATA_FILE.write_text(json.dumps(data, indent=2))
+
+def load_budget():
+    if BUDGET_FILE.exists():
+        return json.loads(BUDGET_FILE.read_text()).get("budget", 0)
+    return 0
+
+def save_budget(amount):
+    BUDGET_FILE.write_text(json.dumps({"budget": amount}, indent=2))
+
+@app.route('/set_budget', methods=['GET', 'POST'])
+def set_budget():
+    if request.method == 'POST':
+        try:
+            amount = float(request.form.get('budget', 0))
+            save_budget(amount)
+            flash('Budget updated!')
+            return redirect(url_for('dashboard'))
+        except Exception:
+            flash('Invalid budget amount!')
+    budget = load_budget()
+    return render_template('set_budget.html', budget=budget)
 
 @app.route('/')
 def home():
@@ -37,7 +59,9 @@ def dashboard():
     for d in last7:
         total = sum(tx['amount'] for tx in data if dt.datetime.fromisoformat(tx['ts']).date() == d)
         last7_totals.append(total)
-    return render_template('dashboard.html', today_total=today_total, month_total=month_total, num_tx=num_tx, recent=recent, last7_labels=last7_labels, last7_totals=last7_totals)
+    budget = load_budget()
+    budget_progress = month_total / budget * 100 if budget else 0
+    return render_template('dashboard.html', today_total=today_total, month_total=month_total, num_tx=num_tx, recent=recent, last7_labels=last7_labels, last7_totals=last7_totals, budget=budget, budget_progress=budget_progress)
 
 @app.route('/add', methods=['POST'])
 def add():
@@ -116,10 +140,9 @@ def summary():
     by_cat = defaultdict(float)
     for tx in data:
         by_cat[tx["category"]] += tx["amount"]
-    return render_template('summary.html',
-                           today_total=today_total,
-                           month_total=month_total,
-                           by_cat=by_cat)
+    budget = load_budget()
+    budget_progress = month_total / budget * 100 if budget else 0
+    return render_template('summary.html', today_total=today_total, month_total=month_total, by_cat=by_cat, budget=budget, budget_progress=budget_progress)
 
 @app.route('/charts')
 def charts():

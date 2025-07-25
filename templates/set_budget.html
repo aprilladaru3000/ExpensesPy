@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en" class="">
+<head>
+  <meta charset="UTF-8">
+  <title>Set Budget</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 dark:bg-gray-900 p-6">
+  <div class="max-w-md mx-auto bg-white dark:bg-gray-800 p-6 rounded shadow">
+    <h2 class="text-2xl font-bold mb-4 text-gray-900 dark:text-gray-100 flex items-center"><span class="mr-2">💰</span>Set Monthly Budget</h2>
+    <form method="POST" class="space-y-4">
+      <input name="budget" type="number" step="1000" min="0" class="w-full p-2 border rounded bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100" value="{{ budget }}" required>
+      <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded">Save</button>
+    </form>
+    <div class="mt-4 text-sm flex flex-col md:flex-row gap-2 md:gap-4 items-start md:items-center">
+      <a href="/dashboard" class="text-blue-600 dark:text-blue-400 hover:underline flex items-center"><span class="mr-1">🏠</span>Dashboard</a>
+      <span class="hidden md:inline">|</span>
+      <a href="/list" class="text-blue-600 dark:text-blue-400 hover:underline flex items-center"><span class="mr-1">📋</span>Transactions</a>
+      <span class="hidden md:inline">|</span>
+      <a href="/summary" class="text-blue-600 dark:text-blue-400 hover:underline flex items-center"><span class="mr-1">📊</span>Summary</a>
+      <span class="hidden md:inline">|</span>
+      <a href="/charts" class="text-blue-600 dark:text-blue-400 hover:underline flex items-center"><span class="mr-1">📈</span>Charts</a>
+      <span class="hidden md:inline">|</span>
+      <button id="darkToggle" class="ml-auto bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200 px-3 py-1 rounded text-xs">🌙/☀️</button>
+    </div>
+  </div>
+  <script>
+    // Dark mode toggle
+    const html = document.documentElement;
+    const darkToggle = document.getElementById('darkToggle');
+    function setDarkMode(on) {
+      if (on) {
+        html.classList.add('dark');
+        localStorage.setItem('darkMode', '1');
+      } else {
+        html.classList.remove('dark');
+        localStorage.setItem('darkMode', '0');
+      }
+    }
+    if (localStorage.getItem('darkMode') === '1' || (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+      setDarkMode(true);
+    }
+    darkToggle.onclick = () => setDarkMode(!html.classList.contains('dark'));
+  </script>
+</body>
+</html> 
