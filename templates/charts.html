@@ -1,21 +1,23 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="">
 <head>
   <meta charset="UTF-8">
   <title>Spending Charts</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
-<body class="bg-gray-100 p-6">
-  <div class="max-w-full md:max-w-3xl mx-auto bg-white p-4 md:p-6 rounded shadow">
-    <h2 class="text-2xl md:text-3xl font-bold mb-4 flex items-center"><span class="mr-2">📈</span>Spending Charts</h2>
+<body class="bg-gray-100 dark:bg-gray-900 p-6">
+  <div class="max-w-full md:max-w-3xl mx-auto bg-white dark:bg-gray-800 p-4 md:p-6 rounded shadow">
+    <h2 class="text-2xl md:text-3xl font-bold mb-4 flex items-center text-gray-900 dark:text-gray-100"><span class="mr-2">📈</span>Spending Charts</h2>
     <div class="mb-6">
       <nav class="flex flex-col md:flex-row gap-2 md:gap-4 text-sm md:text-base mb-4 items-start md:items-center">
-        <a href="/" class="text-blue-600 hover:underline flex items-center"><span class="mr-1">💸</span>Add New</a>
+        <a href="/" class="text-blue-600 dark:text-blue-400 hover:underline flex items-center"><span class="mr-1">💸</span>Add New</a>
         <span class="hidden md:inline">|</span>
-        <a href="/list" class="text-blue-600 hover:underline flex items-center"><span class="mr-1">📋</span>Transactions</a>
+        <a href="/list" class="text-blue-600 dark:text-blue-400 hover:underline flex items-center"><span class="mr-1">📋</span>Transactions</a>
         <span class="hidden md:inline">|</span>
-        <a href="/summary" class="text-blue-600 hover:underline flex items-center"><span class="mr-1">📊</span>Summary</a>
+        <a href="/summary" class="text-blue-600 dark:text-blue-400 hover:underline flex items-center"><span class="mr-1">📊</span>Summary</a>
+        <span class="hidden md:inline">|</span>
+        <button id="darkToggle" class="ml-auto bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200 px-3 py-1 rounded text-xs">🌙/☀️</button>
       </nav>
       <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
         <div>
@@ -102,6 +104,24 @@
         plugins: { legend: { position: 'bottom' } }
       }
     });
+
+    // Dark mode toggle
+    const html = document.documentElement;
+    const darkToggle = document.getElementById('darkToggle');
+    function setDarkMode(on) {
+      if (on) {
+        html.classList.add('dark');
+        localStorage.setItem('darkMode', '1');
+      } else {
+        html.classList.remove('dark');
+        localStorage.setItem('darkMode', '0');
+      }
+    }
+    // On load
+    if (localStorage.getItem('darkMode') === '1' || (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+      setDarkMode(true);
+    }
+    darkToggle.onclick = () => setDarkMode(!html.classList.contains('dark'));
   </script>
 </body>
 </html> 

@@ -19,9 +19,25 @@ def save_data(data):
     DATA_FILE.write_text(json.dumps(data, indent=2))
 
 @app.route('/')
-def index():
-    message = get_flashed_messages()
-    return render_template('index.html', message=message[0] if message else None)
+def home():
+    return redirect(url_for('dashboard'))
+
+@app.route('/dashboard')
+def dashboard():
+    data = load_data()
+    now = dt.datetime.now()
+    today_total = sum(tx["amount"] for tx in data if dt.datetime.fromisoformat(tx["ts"]).date() == now.date())
+    month_total = sum(tx["amount"] for tx in data if dt.datetime.fromisoformat(tx["ts"]).strftime("%Y-%m") == now.strftime("%Y-%m"))
+    num_tx = len(data)
+    recent = sorted(data, key=lambda x: x["ts"], reverse=True)[:5]
+    # Mini chart: last 7 days
+    last7 = [(now.date() - dt.timedelta(days=i)) for i in range(6, -1, -1)]
+    last7_labels = [d.strftime('%a %d') for d in last7]
+    last7_totals = []
+    for d in last7:
+        total = sum(tx['amount'] for tx in data if dt.datetime.fromisoformat(tx['ts']).date() == d)
+        last7_totals.append(total)
+    return render_template('dashboard.html', today_total=today_total, month_total=month_total, num_tx=num_tx, recent=recent, last7_labels=last7_labels, last7_totals=last7_totals)
 
 @app.route('/add', methods=['POST'])
 def add():

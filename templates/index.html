@@ -1,30 +1,51 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="">
 <head>
   <meta charset="UTF-8">
   <title>Add Expense</title>
   <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body class="bg-gray-100 p-6">
-  <div class="max-w-md md:max-w-xl mx-auto bg-white p-4 md:p-6 rounded shadow">
-    <h2 class="text-2xl md:text-3xl font-bold mb-4 flex items-center"><span class="mr-2">💸</span>Add Expense</h2>
+<body class="bg-gray-100 dark:bg-gray-900 p-6">
+  <div class="max-w-md md:max-w-xl mx-auto bg-white dark:bg-gray-800 p-4 md:p-6 rounded shadow">
+    <h2 class="text-2xl md:text-3xl font-bold mb-4 flex items-center text-gray-900 dark:text-gray-100"><span class="mr-2">💸</span>Add Expense</h2>
     <!-- Feedback message placeholder -->
     {% if message %}
-      <div class="mb-4 p-2 bg-green-100 text-green-800 rounded text-sm md:text-base">{{ message }}</div>
+      <div class="mb-4 p-2 bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200 rounded text-sm md:text-base">{{ message }}</div>
     {% endif %}
     <form method="POST" action="/add" class="space-y-3 md:space-y-4">
-      <input name="desc" placeholder="Description" class="w-full p-2 border rounded focus:ring-2 focus:ring-blue-200 text-sm md:text-base" required>
-      <input name="amount" type="number" step ="1000" placeholder="Amount" class="w-full p-2 border rounded focus:ring-2 focus:ring-blue-200 text-sm md:text-base" required>
-      <input name="category" placeholder="Category" class="w-full p-2 border rounded focus:ring-2 focus:ring-blue-200 text-sm md:text-base" value="misc">
+      <input name="desc" placeholder="Description" class="w-full p-2 border rounded focus:ring-2 focus:ring-blue-200 text-sm md:text-base bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100" required>
+      <input name="amount" type="number" step ="1000" placeholder="Amount" class="w-full p-2 border rounded focus:ring-2 focus:ring-blue-200 text-sm md:text-base bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100" required>
+      <input name="category" placeholder="Category" class="w-full p-2 border rounded focus:ring-2 focus:ring-blue-200 text-sm md:text-base bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100" value="misc">
       <button type="submit" class="bg-blue-600 hover:bg-blue-700 transition text-white px-4 py-2 rounded flex items-center text-sm md:text-base"><span class="mr-2">➕</span>Add</button>
     </form>
     <div class="mt-4 text-sm md:text-base flex flex-col md:flex-row gap-2 md:gap-4 items-start md:items-center">
-      <a href="/list" class="text-blue-600 hover:underline flex items-center"><span class="mr-1">📋</span>View Transactions</a>
+      <a href="/list" class="text-blue-600 dark:text-blue-400 hover:underline flex items-center"><span class="mr-1">📋</span>View Transactions</a>
       <span class="hidden md:inline">|</span>
-      <a href="/summary" class="text-blue-600 hover:underline flex items-center"><span class="mr-1">📊</span>Summary</a>
+      <a href="/summary" class="text-blue-600 dark:text-blue-400 hover:underline flex items-center"><span class="mr-1">📊</span>Summary</a>
       <span class="hidden md:inline">|</span>
-      <a href="/charts" class="text-blue-600 hover:underline flex items-center"><span class="mr-1">📈</span>Charts</a>
+      <a href="/charts" class="text-blue-600 dark:text-blue-400 hover:underline flex items-center"><span class="mr-1">📈</span>Charts</a>
+      <span class="hidden md:inline">|</span>
+      <button id="darkToggle" class="ml-auto bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200 px-3 py-1 rounded text-xs">🌙/☀️</button>
     </div>
   </div>
+  <script>
+    // Dark mode toggle
+    const html = document.documentElement;
+    const darkToggle = document.getElementById('darkToggle');
+    function setDarkMode(on) {
+      if (on) {
+        html.classList.add('dark');
+        localStorage.setItem('darkMode', '1');
+      } else {
+        html.classList.remove('dark');
+        localStorage.setItem('darkMode', '0');
+      }
+    }
+    // On load
+    if (localStorage.getItem('darkMode') === '1' || (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+      setDarkMode(true);
+    }
+    darkToggle.onclick = () => setDarkMode(!html.classList.contains('dark'));
+  </script>
 </body>
 </html>
