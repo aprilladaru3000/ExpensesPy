@@ -10,6 +10,7 @@ app = Flask(__name__)
 app.secret_key = 'your_secret_key_here'  # Needed for flash messages
 DATA_FILE = Path(__file__).with_name("expenses.json")
 BUDGET_FILE = Path(__file__).with_name("budget.json")
+RECURRING_FILE = Path(__file__).with_name("recurring.json")
 
 def load_data():
     if DATA_FILE.exists():
@@ -27,6 +28,58 @@ def load_budget():
 def save_budget(amount):
     BUDGET_FILE.write_text(json.dumps({"budget": amount}, indent=2))
 
+def load_recurring():
+    if RECURRING_FILE.exists():
+        return json.loads(RECURRING_FILE.read_text())
+    return []
+
+def save_recurring(data):
+    RECURRING_FILE.write_text(json.dumps(data, indent=2))
+
+# Utility: Add due recurring expenses to main data
+def apply_due_recurring():
+    data = load_data()
+    recs = load_recurring()
+    now = dt.datetime.now().date()
+    updated = False
+    for rec in recs:
+        last_applied = rec.get("last_applied")
+        freq = rec["frequency"]
+        start_date = dt.datetime.fromisoformat(rec["start_date"]).date()
+        if last_applied:
+            last = dt.datetime.fromisoformat(last_applied).date()
+        else:
+            last = start_date - dt.timedelta(days=1)
+        # Find next due date
+        next_due = last
+        while True:
+            if freq == "daily":
+                next_due += dt.timedelta(days=1)
+            elif freq == "weekly":
+                next_due += dt.timedelta(weeks=1)
+            elif freq == "monthly":
+                # Add 1 month (approx)
+                month = next_due.month + 1 if next_due.month < 12 else 1
+                year = next_due.year if next_due.month < 12 else next_due.year + 1
+                day = min(next_due.day, 28)  # avoid invalid dates
+                next_due = dt.date(year, month, day)
+            if next_due > now:
+                break
+            if next_due >= start_date:
+                # Add expense
+                data.append({
+                    "id": str(uuid.uuid4()),
+                    "desc": rec["desc"],
+                    "amount": rec["amount"],
+                    "category": rec["category"],
+                    "ts": dt.datetime.combine(next_due, dt.datetime.min.time()).isoformat()
+                })
+                rec["last_applied"] = next_due.isoformat()
+                updated = True
+    if updated:
+        save_data(data)
+        save_recurring(recs)
+
 @app.route('/set_budget', methods=['GET', 'POST'])
 def set_budget():
     if request.method == 'POST':
@@ -42,6 +95,7 @@ def set_budget():
 
 @app.route('/')
 def home():
+    apply_due_recurring()
     return redirect(url_for('dashboard'))
 
 @app.route('/dashboard')
@@ -193,6 +247,42 @@ def export():
     return Response(generate(), mimetype='text/csv', headers={
         'Content-Disposition': 'attachment; filename=expenses.csv'
     })
+
+@app.route('/add_recurring', methods=['GET', 'POST'])
+def add_recurring():
+    if request.method == 'POST':
+        desc = request.form.get('desc')
+        amount = request.form.get('amount')
+        category = request.form.get('category', 'misc')
+        frequency = request.form.get('frequency')
+        start_date = request.form.get('start_date')
+        if not desc or not amount or not frequency or not start_date:
+            flash('Missing data!')
+            return render_template('add_recurring.html')
+        try:
+            amount = float(amount)
+        except ValueError:
+            flash('Invalid amount!')
+            return render_template('add_recurring.html')
+        recs = load_recurring()
+        recs.append({
+            "id": str(uuid.uuid4()),
+            "desc": desc,
+            "amount": amount,
+            "category": category,
+            "frequency": frequency,
+            "start_date": start_date,
+            "last_applied": None
+        })
+        save_recurring(recs)
+        flash('Recurring expense added!')
+        return redirect(url_for('list_recurring'))
+    return render_template('add_recurring.html')
+
+@app.route('/list_recurring')
+def list_recurring():
+    recs = load_recurring()
+    return render_template('list_recurring.html', recs=recs)
 
 if __name__ == '__main__':
     app.run(debug=True)

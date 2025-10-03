@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en" class="">
+<head>
+  <meta charset="UTF-8">
+  <title>Recurring Expenses</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 dark:bg-gray-900 p-6">
+  <div class="max-w-2xl mx-auto bg-white dark:bg-gray-800 p-4 md:p-6 rounded shadow">
+    <h2 class="text-2xl md:text-3xl font-bold mb-4 flex items-center text-gray-900 dark:text-gray-100"><span class="mr-2">🔁</span>Recurring Expenses</h2>
+    <div class="mb-4">
+      <a href="/add_recurring" class="bg-blue-600 hover:bg-blue-700 text-white px-3 py-2 rounded text-sm md:text-base flex items-center" title="Add Recurring">➕ Add Recurring</a>
+    </div>
+    <div class="overflow-x-auto">
+      <table class="w-full table-auto border text-sm md:text-base bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100">
+        <thead>
+          <tr class="bg-gray-200">
+            <th class="p-2 text-left">Description</th>
+            <th class="p-2 text-left">Category</th>
+            <th class="p-2 text-right">Amount</th>
+            <th class="p-2 text-left">Frequency</th>
+            <th class="p-2 text-left">Start Date</th>
+            <th class="p-2 text-left">Last Applied</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for rec in recs %}
+          <tr class="border-b hover:bg-gray-50">
+            <td class="p-2">{{ rec.desc }}</td>
+            <td class="p-2">{{ rec.category }}</td>
+            <td class="p-2 text-right">Rp{{ "%.0f"|format(rec.amount) }}</td>
+            <td class="p-2">{{ rec.frequency }}</td>
+            <td class="p-2">{{ rec.start_date }}</td>
+            <td class="p-2">{{ rec.last_applied or '-' }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    <div class="mt-4 text-sm md:text-base flex flex-col md:flex-row gap-2 md:gap-4 items-start md:items-center">
+      <a href="/" class="text-blue-600 dark:text-blue-400 hover:underline flex items-center"><span class="mr-1">🏠</span>Dashboard</a>
+      <span class="hidden md:inline">|</span>
+      <a href="/list" class="text-blue-600 dark:text-blue-400 hover:underline flex items-center"><span class="mr-1">📋</span>Transactions</a>
+      <span class="hidden md:inline">|</span>
+      <a href="/summary" class="text-blue-600 dark:text-blue-400 hover:underline flex items-center"><span class="mr-1">📊</span>Summary</a>
+      <span class="hidden md:inline">|</span>
+      <a href="/charts" class="text-blue-600 dark:text-blue-400 hover:underline flex items-center"><span class="mr-1">📈</span>Charts</a>
+    </div>
+  </div>
+</body>
+</html>
