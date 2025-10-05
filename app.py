@@ -115,7 +115,16 @@ def dashboard():
         last7_totals.append(total)
     budget = load_budget()
     budget_progress = month_total / budget * 100 if budget else 0
-    return render_template('dashboard.html', today_total=today_total, month_total=month_total, num_tx=num_tx, recent=recent, last7_labels=last7_labels, last7_totals=last7_totals, budget=budget, budget_progress=budget_progress)
+    # Notification logic
+    notification = None
+    if budget:
+        if budget_progress > 100:
+            notification = 'You are over your monthly budget!'
+        elif budget_progress > 90:
+            notification = 'Warning: You have used over 90% of your budget.'
+        elif budget_progress > 75:
+            notification = 'Notice: You have used over 75% of your budget.'
+    return render_template('dashboard.html', today_total=today_total, month_total=month_total, num_tx=num_tx, recent=recent, last7_labels=last7_labels, last7_totals=last7_totals, budget=budget, budget_progress=budget_progress, notification=notification)
 
 @app.route('/add', methods=['POST'])
 def add():
