@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en" class="">
+<head>
+  <meta charset="UTF-8">
+  <title>Category Breakdown</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body class="bg-gray-100 dark:bg-gray-900 p-6">
+  <div class="max-w-5xl mx-auto bg-white dark:bg-gray-800 p-4 md:p-6 rounded shadow">
+    <h2 class="text-2xl md:text-3xl font-bold mb-6 flex items-center text-gray-900 dark:text-gray-100"><span class="mr-2">📊</span>Category Breakdown</h2>
+    
+    <!-- Navigation -->
+    <div class="flex flex-col md:flex-row gap-2 md:gap-4 text-sm md:text-base mb-6 items-start md:items-center">
+      <a href="/" class="text-blue-600 dark:text-blue-400 hover:underline flex items-center"><span class="mr-1">🏠</span>Dashboard</a>
+      <span class="hidden md:inline">|</span>
+      <a href="/charts" class="text-blue-600 dark:text-blue-400 hover:underline flex items-center"><span class="mr-1">📈</span>Charts</a>
+      <span class="hidden md:inline">|</span>
+      <a href="/list" class="text-blue-600 dark:text-blue-400 hover:underline flex items-center"><span class="mr-1">📋</span>Transactions</a>
+      <span class="hidden md:inline">|</span>
+      <button id="darkToggle" class="ml-auto bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200 px-3 py-1 rounded text-xs">🌙/☀️</button>
+    </div>
+
+    <!-- Charts Section -->
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
+      <!-- Overall by Category Pie Chart -->
+      <div class="bg-gray-50 dark:bg-gray-700 p-4 rounded">
+        <h3 class="font-semibold mb-4 text-base md:text-lg text-gray-900 dark:text-gray-100">Overall by Category</h3>
+        <canvas id="overallChart"></canvas>
+      </div>
+
+      <!-- This Month by Category Pie Chart -->
+      <div class="bg-gray-50 dark:bg-gray-700 p-4 rounded">
+        <h3 class="font-semibold mb-4 text-base md:text-lg text-gray-900 dark:text-gray-100">This Month by Category</h3>
+        <canvas id="monthChart"></canvas>
+      </div>
+
+      <!-- Last 30 Days Bar Chart -->
+      <div class="bg-gray-50 dark:bg-gray-700 p-4 rounded lg:col-span-2">
+        <h3 class="font-semibold mb-4 text-base md:text-lg text-gray-900 dark:text-gray-100">Last 30 Days by Category</h3>
+        <canvas id="last30Chart"></canvas>
+      </div>
+    </div>
+
+    <!-- Detailed Table -->
+    <div class="bg-gray-50 dark:bg-gray-700 p-4 rounded">
+      <h3 class="font-semibold mb-4 text-base md:text-lg text-gray-900 dark:text-gray-100">Detailed Breakdown</h3>
+      <div class="overflow-x-auto">
+        <table class="w-full table-auto border text-sm md:text-base bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100">
+          <thead>
+            <tr class="bg-gray-200 dark:bg-gray-600">
+              <th class="p-3 text-left">Category</th>
+              <th class="p-3 text-right">Overall Total</th>
+              <th class="p-3 text-right">This Month Total</th>
+              <th class="p-3 text-right">This Month Count</th>
+              <th class="p-3 text-right">Monthly Average</th>
+              <th class="p-3 text-right">Last 30 Days</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for cat in cat_labels %}
+            <tr class="border-b hover:bg-gray-50 dark:hover:bg-gray-700">
+              <td class="p-3 font-semibold">{{ cat }}</td>
+              <td class="p-3 text-right">Rp{{ "%.0f"|format(overall_totals[loop.index0]) }}</td>
+              <td class="p-3 text-right">Rp{{ "%.0f"|format(month_totals[loop.index0]) }}</td>
+              <td class="p-3 text-right">{{ month_counts[loop.index0] }}</td>
+              <td class="p-3 text-right">Rp{{ "%.0f"|format(month_averages[loop.index0]) }}</td>
+              <td class="p-3 text-right">Rp{{ "%.0f"|format(last30_totals[loop.index0]) }}</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const catLabels = {{ cat_labels|tojson }};
+    const overallTotals = {{ overall_totals|tojson }};
+    const monthTotals = {{ month_totals|tojson }};
+    const last30Totals = {{ last30_totals|tojson }};
+
+    const chartColors = [
+      'rgba(59, 130, 246, 0.7)',
+      'rgba(16, 185, 129, 0.7)',
+      'rgba(245, 158, 11, 0.7)',
+      'rgba(239, 68, 68, 0.7)',
+      'rgba(168, 85, 247, 0.7)',
+      'rgba(251, 191, 36, 0.7)',
+      'rgba(34, 197, 94, 0.7)',
+      'rgba(79, 70, 229, 0.7)',
+      'rgba(239, 68, 68, 0.7)',
+      'rgba(99, 102, 241, 0.7)'
+    ];
+
+    // Overall Pie Chart
+    new Chart(document.getElementById('overallChart'), {
+      type: 'doughnut',
+      data: {
+        labels: catLabels,
+        datasets: [{
+          data: overallTotals,
+          backgroundColor: chartColors.slice(0, catLabels.length)
+        }]
+      },
+      options: {
+        responsive: true,
+        plugins: { legend: { position: 'bottom' } }
+      }
+    });
+
+    // This Month Pie Chart
+    new Chart(document.getElementById('monthChart'), {
+      type: 'doughnut',
+      data: {
+        labels: catLabels,
+        datasets: [{
+          data: monthTotals,
+          backgroundColor: chartColors.slice(0, catLabels.length)
+        }]
+      },
+      options: {
+        responsive: true,
+        plugins: { legend: { position: 'bottom' } }
+      }
+    });
+
+    // Last 30 Days Bar Chart
+    new Chart(document.getElementById('last30Chart'), {
+      type: 'bar',
+      data: {
+        labels: catLabels,
+        datasets: [{
+          label: 'Spent',
+          data: last30Totals,
+          backgroundColor: 'rgba(59, 130, 246, 0.7)'
+        }]
+      },
+      options: {
+        responsive: true,
+        indexAxis: 'y',
+        plugins: { legend: { display: false } },
+        scales: { x: { beginAtZero: true } }
+      }
+    });
+
+    // Dark mode toggle
+    const html = document.documentElement;
+    const darkToggle = document.getElementById('darkToggle');
+    function setDarkMode(on) {
+      if (on) {
+        html.classList.add('dark');
+        localStorage.setItem('darkMode', '1');
+      } else {
+        html.classList.remove('dark');
+        localStorage.setItem('darkMode', '0');
+      }
+    }
+    if (localStorage.getItem('darkMode') === '1' || (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+      setDarkMode(true);
+    }
+    darkToggle.onclick = () => setDarkMode(!html.classList.contains('dark'));
+  </script>
+</body>
+</html>

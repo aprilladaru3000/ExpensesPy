@@ -293,5 +293,51 @@ def list_recurring():
     recs = load_recurring()
     return render_template('list_recurring.html', recs=recs)
 
+@app.route('/category_breakdown')
+def category_breakdown():
+    data = load_data()
+    now = dt.datetime.now()
+    
+    # Overall category breakdown
+    overall_by_cat = defaultdict(float)
+    for tx in data:
+        overall_by_cat[tx['category']] += tx['amount']
+    
+    # This month breakdown
+    month_by_cat = defaultdict(float)
+    month_count_by_cat = defaultdict(int)
+    for tx in data:
+        tx_date = dt.datetime.fromisoformat(tx['ts'])
+        if tx_date.strftime('%Y-%m') == now.strftime('%Y-%m'):
+            month_by_cat[tx['category']] += tx['amount']
+            month_count_by_cat[tx['category']] += 1
+    
+    # Last 30 days breakdown
+    last30_by_cat = defaultdict(float)
+    cutoff_date = now.date() - dt.timedelta(days=30)
+    for tx in data:
+        tx_date = dt.datetime.fromisoformat(tx['ts']).date()
+        if tx_date >= cutoff_date:
+            last30_by_cat[tx['category']] += tx['amount']
+    
+    # Prepare data for charts
+    cat_labels = list(set(list(overall_by_cat.keys()) + list(month_by_cat.keys()) + list(last30_by_cat.keys())))
+    cat_labels.sort()
+    overall_totals = [overall_by_cat.get(cat, 0) for cat in cat_labels]
+    month_totals = [month_by_cat.get(cat, 0) for cat in cat_labels]
+    last30_totals = [last30_by_cat.get(cat, 0) for cat in cat_labels]
+    month_counts = [month_count_by_cat.get(cat, 0) for cat in cat_labels]
+    
+    # Calculate averages
+    month_averages = [month_by_cat.get(cat, 0) / month_count_by_cat.get(cat, 1) if month_count_by_cat.get(cat, 0) > 0 else 0 for cat in cat_labels]
+    
+    return render_template('category_breakdown.html',
+        cat_labels=cat_labels,
+        overall_totals=overall_totals,
+        month_totals=month_totals,
+        last30_totals=last30_totals,
+        month_counts=month_counts,
+        month_averages=month_averages)
+
 if __name__ == '__main__':
     app.run(debug=True)
