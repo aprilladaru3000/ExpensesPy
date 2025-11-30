@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en" class="">
+<head>
+  <meta charset="UTF-8">
+  <title>Edit Recurring Expense</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 dark:bg-gray-900 p-6">
+  <div class="max-w-md md:max-w-xl mx-auto bg-white dark:bg-gray-800 p-4 md:p-6 rounded shadow">
+    <h2 class="text-2xl md:text-3xl font-bold mb-4 flex items-center text-gray-900 dark:text-gray-100"><span class="mr-2">✏️</span>Edit Recurring Expense</h2>
+    <form method="POST" class="space-y-3 md:space-y-4">
+      <input name="desc" placeholder="Description" class="w-full p-2 border rounded text-sm md:text-base bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100" required value="{{ rec.desc }}">
+      <input name="amount" type="number" placeholder="Amount" class="w-full p-2 border rounded text-sm md:text-base bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100" required value="{{ rec.amount }}">
+      <input name="category" placeholder="Category" class="w-full p-2 border rounded text-sm md:text-base bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100" value="{{ rec.category }}">
+      <select name="frequency" class="w-full p-2 border rounded text-sm md:text-base bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100" required>
+        <option value="daily" {% if rec.frequency == 'daily' %}selected{% endif %}>Daily</option>
+        <option value="weekly" {% if rec.frequency == 'weekly' %}selected{% endif %}>Weekly</option>
+        <option value="monthly" {% if rec.frequency == 'monthly' %}selected{% endif %}>Monthly</option>
+      </select>
+      <input name="start_date" type="date" class="w-full p-2 border rounded text-sm md:text-base bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100" required value="{{ rec.start_date }}">
+      <div class="flex gap-2">
+        <button type="submit" class="bg-yellow-500 hover:bg-yellow-600 text-white px-4 py-2 rounded text-sm md:text-base">Save</button>
+        <a href="/list_recurring" class="bg-gray-300 dark:bg-gray-600 text-gray-800 dark:text-gray-200 px-4 py-2 rounded text-sm md:text-base">Cancel</a>
+      </div>
+    </form>
+    <div class="mt-4 text-sm md:text-base flex flex-col md:flex-row gap-2 md:gap-4 items-start md:items-center">
+      <a href="/list_recurring" class="text-blue-600 dark:text-blue-400 hover:underline flex items-center"><span class="mr-1">🔁</span>All Recurring</a>
+      <span class="hidden md:inline">|</span>
+      <a href="/" class="text-blue-600 dark:text-blue-400 hover:underline flex items-center"><span class="mr-1">🏠</span>Dashboard</a>
+      <span class="hidden md:inline">|</span>
+      <button id="darkToggle" class="ml-auto bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200 px-3 py-1 rounded text-xs">🌙/☀️</button>
+    </div>
+  </div>
+  <script>
+    // Dark mode toggle
+    const html = document.documentElement;
+    const darkToggle = document.getElementById('darkToggle');
+    function setDarkMode(on) {
+      if (on) {
+        html.classList.add('dark');
+        localStorage.setItem('darkMode', '1');
+      } else {
+        html.classList.remove('dark');
+        localStorage.setItem('darkMode', '0');
+      }
+    }
+    // On load
+    if (localStorage.getItem('darkMode') === '1' || (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+      setDarkMode(true);
+    }
+    darkToggle.onclick = () => setDarkMode(!html.classList.contains('dark'));
+  </script>
+</body>
+</html>

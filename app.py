@@ -291,7 +291,46 @@ def add_recurring():
 @app.route('/list_recurring')
 def list_recurring():
     recs = load_recurring()
-    return render_template('list_recurring.html', recs=recs)
+    message = get_flashed_messages()
+    return render_template('list_recurring.html', recs=recs, message=message[0] if message else None)
+
+@app.route('/edit_recurring/<id>', methods=['GET', 'POST'])
+def edit_recurring(id):
+    recs = load_recurring()
+    rec = next((item for item in recs if item["id"] == id), None)
+    if not rec:
+        return "Recurring expense not found", 404
+    if request.method == 'POST':
+        desc = request.form.get('desc')
+        amount = request.form.get('amount')
+        category = request.form.get('category', 'misc')
+        frequency = request.form.get('frequency')
+        start_date = request.form.get('start_date')
+        if not desc or not amount or not frequency or not start_date:
+            flash('Missing data!')
+            return render_template('edit_recurring.html', rec=rec)
+        try:
+            amount = float(amount)
+        except ValueError:
+            flash('Invalid amount!')
+            return render_template('edit_recurring.html', rec=rec)
+        rec['desc'] = desc
+        rec['amount'] = amount
+        rec['category'] = category
+        rec['frequency'] = frequency
+        rec['start_date'] = start_date
+        save_recurring(recs)
+        flash('Recurring expense updated!')
+        return redirect(url_for('list_recurring'))
+    return render_template('edit_recurring.html', rec=rec)
+
+@app.route('/delete_recurring/<id>', methods=['POST'])
+def delete_recurring(id):
+    recs = load_recurring()
+    recs = [rec for rec in recs if rec["id"] != id]
+    save_recurring(recs)
+    flash('Recurring expense deleted!')
+    return redirect(url_for('list_recurring'))
 
 @app.route('/category_breakdown')
 def category_breakdown():
